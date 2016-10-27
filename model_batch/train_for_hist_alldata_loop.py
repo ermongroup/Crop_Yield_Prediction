@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
 
     for loop in range(0,1):
-        for predict_year in range(2005,2016):
+        for predict_year in range(2006,2016):
             logging.basicConfig(filename=config.save_path+'/log/train_for_hist_alldata_loop'+str(predict_year)+str(loop)+'.log',level=logging.DEBUG)
             # # split into train and validate
             # index_train = np.nonzero(year_all < predict_year)[0]
@@ -110,11 +110,11 @@ if __name__ == "__main__":
                             model.x:image_train_batch,
                             model.y:yield_train_batch,
                             model.lr:config.lr,
-                            model.keep_prob: config.drop_out
+                            model.keep_prob: config.keep_prob
                             })
 
                         if i%500 == 0:
-                            val_loss,val_loss_reg = sess.run(model.loss_err,model.loss_reg, feed_dict={
+                            val_loss,val_loss_reg = sess.run([model.loss_err,model.loss_reg], feed_dict={
                                 model.x: image_all[index_validate_batch, :, 0:config.H, :],
                                 model.y: yield_all[index_validate_batch],
                                 model.keep_prob: 1
