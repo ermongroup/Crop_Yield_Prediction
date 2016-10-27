@@ -16,3 +16,7 @@ Here is a brief introduction on the utilities for each folder.
 **/model_semi_supervised** A recent contribution, extending the model with semi-supervised deep generative model.
 
 **result_analysis** Plot results, plot yield map, etc.
+
+For more information, please contact Jiaxuan You.
+
+youjiaxuan@gmail.com or jiaxuan@stanford.edu.
