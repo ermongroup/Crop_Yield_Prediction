@@ -45,9 +45,10 @@ if __name__ == "__main__":
     locations_all = locations_all[list_keep,:]
     index_all = index_all[list_keep,:]
 
-    for loop in range(3,4):
-        for predict_year in range(2012,2013):
-            logging.basicConfig(filename='train_for_hist_alldata_loop'+str(predict_year)+str(loop)+'.log',level=logging.DEBUG)
+
+    for loop in range(0,1):
+        for predict_year in range(2005,2016):
+            logging.basicConfig(filename=config.save_path+'/log/train_for_hist_alldata_loop'+str(predict_year)+str(loop)+'.log',level=logging.DEBUG)
             # # split into train and validate
             # index_train = np.nonzero(year_all < predict_year)[0]
             # index_validate = np.nonzero(year_all == predict_year)[0]
@@ -61,9 +62,10 @@ if __name__ == "__main__":
             logging.info('train size %d',index_train.shape[0])
             logging.info('validate size',index_validate.shape[0])
 
-            # calc train image mean (for each band), and then detract (broadcast)
-            image_mean=np.mean(image_all[index_train],(0,1,2))
-            image_all = image_all - image_mean
+
+            # # calc train image mean (for each band), and then detract (broadcast)
+            # image_mean=np.mean(image_all[index_train],(0,1,2))
+            # image_all = image_all - image_mean
 
             image_validate=image_all[index_validate]
             yield_validate=yield_all[index_validate]
@@ -84,22 +86,27 @@ if __name__ == "__main__":
                     sess.run(tf.initialize_all_variables())
                     saver=tf.train.Saver()
                     for i in range(config.train_step):
-                        if i==6000:
+                        if i==4000:
                             config.lr/=10
 
-                        if i==20000:
+                        if i==15000:
                             config.lr/=10
                        
                         # index_train_batch = np.random.choice(index_train,size=config.B)
                         index_validate_batch = np.random.choice(index_validate, size=config.B)
 
                         # try data augmentation while training
-                        index_train_batch_1 = np.random.choice(index_train,size=config.B)
-                        index_train_batch_2 = np.random.choice(index_train,size=config.B)
+                        shift = 1
+                        index_train_batch_1 = np.random.choice(index_train,size=config.B+shift*2)
+                        index_train_batch_2 = np.random.choice(index_train,size=config.B+shift*2)
                         image_train_batch = (image_all[index_train_batch_1,:,0:config.H,:]+image_all[index_train_batch_1,:,0:config.H,:])/2
                         yield_train_batch = (yield_all[index_train_batch_1]+yield_all[index_train_batch_1])/2
 
-                        _, train_loss = sess.run([model.train_op, model.loss_err], feed_dict={
+                        arg_index = np.argsort(yield_train_batch)
+                        yield_train_batch = yield_train_batch[arg_index][shift:-shift]
+                        image_train_batch = image_train_batch[arg_index][shift:-shift]
+
+                        _, train_loss, train_loss_reg = sess.run([model.train_op, model.loss_err, model.loss_reg], feed_dict={
                             model.x:image_train_batch,
                             model.y:yield_train_batch,
                             model.lr:config.lr,
@@ -107,14 +114,14 @@ if __name__ == "__main__":
                             })
 
                         if i%500 == 0:
-                            val_loss = sess.run(model.loss_err, feed_dict={
+                            val_loss,val_loss_reg = sess.run(model.loss_err,model.loss_reg, feed_dict={
                                 model.x: image_all[index_validate_batch, :, 0:config.H, :],
                                 model.y: yield_all[index_validate_batch],
                                 model.keep_prob: 1
                             })
 
-                            print str(loop)+str(time)+'predict year'+str(predict_year)+'step'+str(i),train_loss,val_loss,config.lr
-                            logging.info('%d %d %d step %d %f %f %f',loop,time,predict_year,i,train_loss,val_loss,config.lr)
+                            print str(loop)+str(time)+'predict year'+str(predict_year)+'step'+str(i),train_loss,train_loss_reg,val_loss,val_loss_reg,config.lr
+                            logging.info('%d %d %d step %d %f %f %f %f %f',loop,time,predict_year,i,train_loss,train_loss_reg,val_loss,val_loss_reg,config.lr)
                         if i%500 == 0:
                             # do validation
                             pred = []
@@ -133,13 +140,25 @@ if __name__ == "__main__":
                             RMSE=np.sqrt(np.mean((pred-real)**2))
                             ME=np.mean(pred-real)
 
+                            pred=np.concatenate(pred)
+                            real=np.concatenate(real)
+                            RMSE=np.sqrt(np.mean((pred-real)**2))
+                            ME=np.mean(pred-real)
+                            RMSE_ideal = np.sqrt(np.mean((pred-ME-real)**2))
+                            arg_index = np.argsort(pred)
+                            pred = pred[arg_index][50:-50]
+                            real = real[arg_index][50:-50]
+                            ME_part = np.mean(pred-real)
+
                             if RMSE<RMSE_min:
                                 RMSE_min=RMSE
                                
 
-                            print 'Validation set','RMSE',RMSE,'ME',ME,'RMSE_min',RMSE_min
-                            logging.info('Validation set RMSE %f ME %f RMSE_min %f',RMSE,ME,RMSE_min)
-                        
+                            # print 'Validation set','RMSE',RMSE,'ME',ME,'RMSE_min',RMSE_min
+                            # logging.info('Validation set RMSE %f ME %f RMSE_min %f',RMSE,ME,RMSE_min)
+                            print 'Validation set','RMSE',RMSE,'RMSE_ideal',RMSE_ideal,'ME',ME,'ME_part',ME_part,'RMSE_min',RMSE_min
+                            logging.info('Validation set RMSE %f RMSE_ideal %f ME %f ME_part %f RMSE_min %f',RMSE,RMSE_ideal,ME,ME_part,RMSE_min)
+            
                             summary_train_loss.append(train_loss)
                             summary_eval_loss.append(val_loss)
                             summary_RMSE.append(RMSE)
