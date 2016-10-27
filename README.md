@@ -1,4 +1,4 @@
-# crop-forecasting
+# Crop yield Prection with Deep Learning
 The necessary code for the AAAI-17 paper. "Deep Gaussian Process for Crop Yield Prediction Based on Remote Sensing Data"
 
 This is a preliminary version.
