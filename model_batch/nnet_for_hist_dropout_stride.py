@@ -15,7 +15,7 @@ class Config():
     lr = 1e-3
     weight_decay = 0.005
 
-    drop_out = 0.25
+    keep_prob = 0.25
     # load_path = '/atlas/u/jiaxuan/data/MODIS_data_county_processed_compressed/'
     load_path = "/atlas/u/jiaxuan/data/google_drive/img_output/"
     # load_path = "/atlas/u/jiaxuan/data/google_drive/img_full_output/"
