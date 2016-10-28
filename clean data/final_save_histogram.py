@@ -197,6 +197,7 @@ class fetch_data():
             # print np.sum(image_temp)
         return (np.float32(output_yield), np.float32(output_image))
 
+    ## save supervised data
     # def save_data(self):
     #     output_image = np.zeros([self.index_all.shape[0], 32, 32, 9])
     #     output_yield = np.zeros([self.index_all.shape[0]])
@@ -239,6 +240,7 @@ class fetch_data():
     #              output_year=output_year,output_locations=output_locations,output_index=output_index)
     #     print 'save done'
 
+    ## save unsupervised data
     def save_data(self):
         count_max = 20000
         count = 0
@@ -306,63 +308,7 @@ class fetch_data():
                 count += 1
         print 'save done'
 
-
-    # def save_data(self):
-    #     output_image = np.zeros([self.index_all.shape[0], 32, 32, 9])
-    #     output_yield = np.zeros([self.index_all.shape[0]])
-    #     output_year = np.zeros([self.index_all.shape[0]])
-    #     output_locations = np.zeros([self.index_all.shape[0],2])
-    #     output_index = np.zeros([self.index_all.shape[0],2])
-
-    #     count = 0
-    #     for i in self.index_all:
-    #         year = str(int(self.data_yield[i, 0]))
-    #         loc1 = str(int(self.data_yield[i, 1]))
-    #         loc2 = str(int(self.data_yield[i, 2]))
-
-    #         key = np.array([int(loc1),int(loc2)])
-    #         index = np.where(np.all(self.locations[:,0:2].astype('int') == key, axis=1))
-    #         longitude = self.locations[index,2]
-    #         latitude = self.locations[index,3]
-
-    #         filename = year + '_' + loc1 + '_' + loc2 + '.npy'
-    #         image_temp = np.load(self.dir + filename)
-    #         image_temp = self.filter_timespan(image_temp, 49, 305, 9)
-    #         print image_temp.min(),image_temp.max(),image_temp.shape
-    #         bin_seq = np.linspace(1, 4999, 33)
-
-    #         image_temp=np.reshape(image_temp,(image_temp.shape[0]*image_temp.shape[1],image_temp.shape[2]))
-    #         f=image_temp>0
-    #         # f_5000=image_temp<5000
-    #         # f=f_0*f_5000
-    #         f=np.prod(f,1)
-    #         image_temp=image_temp[f,:]
-
-    #         crop_pixel_count = 1000
-    #         j = 0
-    #         while j < image_temp.shape[0]/1000:
-    #             image_temp_part = image_temp[j*1000:(j+1)*1000,:]
-    #             j += 1
-    #             image_temp_part = self.calc_histogram_flat(image_temp_part, bin_seq,32, 32, 9)
-    #             image_temp_part[np.isnan(image_temp_part)] = 0
-    #             if np.sum(image_temp_part) < 288:
-    #                 print 'broken image', filename, np.sum(image_temp_part)
-    #                 continue
-
-    #             output_image[count, :] = image_temp_part
-    #             output_yield[count] = self.data_yield[i, 3]
-    #             output_year[count] = int(year)
-    #             output_locations[count, 0] = longitude
-    #             output_locations[count, 1] = latitude
-    #             output_index[count,:] = np.array([int(loc1),int(loc2)])
-    #             # print image_temp.shape
-    #             print i,j,np.sum(image_temp_part),year,loc1,loc2
-    #             count += 1
-    #     np.savez(self.dir+'histogram_semi.npz',
-    #              output_image=output_image,output_yield=output_yield,
-    #              output_year=output_year,output_locations=output_locations,output_index=output_index)
-    #     print 'save done'
-
+    # save mean data
     def save_data_mean(self):
         output_image = np.zeros([self.index_all.shape[0], 32*9])
         output_yield = np.zeros([self.index_all.shape[0]])
@@ -384,7 +330,7 @@ class fetch_data():
             image_temp = np.load(self.dir + filename)
             image_temp = self.filter_timespan(image_temp, 49, 305, 9)
 
-            image_temp = np.mean(image_temp,axis=(0,1))
+            image_temp = np.sum(image_temp,axis=(0,1))/np.count_nonzero(image_temp)*image_temp.shape[2]
             image_temp[np.isnan(image_temp)] = 0
 
             output_image[i, :] = image_temp
@@ -418,8 +364,8 @@ if __name__ == '__main__':
     # check_data_integrity()
     # data.calc_mean()
     # i,a=data.next_batch_hist(32,'train')
-    # data.save_data_mean()
-    data.save_data()
+    data.save_data_mean()
+    # data.save_data()
     # data.save_data_mean()
     # data.save_data('validate')
     # data.save_data('test')

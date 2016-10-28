@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
 
     for loop in range(0,1):
-        for predict_year in range(2006,2016):
+        for predict_year in range(2011,2016):
             logging.basicConfig(filename=config.save_path+'/log/train_for_hist_alldata_loop'+str(predict_year)+str(loop)+'.log',level=logging.DEBUG)
             # # split into train and validate
             # index_train = np.nonzero(year_all < predict_year)[0]
@@ -60,7 +60,7 @@ if __name__ == "__main__":
             print 'train size',index_train.shape[0]
             print 'validate size',index_validate.shape[0]
             logging.info('train size %d',index_train.shape[0])
-            logging.info('validate size',index_validate.shape[0])
+            logging.info('validate size %d',index_validate.shape[0])
 
 
             # # calc train image mean (for each band), and then detract (broadcast)
@@ -135,11 +135,6 @@ if __name__ == "__main__":
                                     })
                                 pred.append(pred_temp)
                                 real.append(real_temp)
-                            pred=np.concatenate(pred)
-                            real=np.concatenate(real)
-                            RMSE=np.sqrt(np.mean((pred-real)**2))
-                            ME=np.mean(pred-real)
-
                             pred=np.concatenate(pred)
                             real=np.concatenate(real)
                             RMSE=np.sqrt(np.mean((pred-real)**2))

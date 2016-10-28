@@ -4,45 +4,45 @@ from sklearn import ensemble
 import matplotlib.pyplot as plt
 from joblib import Parallel, delayed
 import multiprocessing
-# import tensorflow as tf
-# from GP_crop_v3 import *
+import tensorflow as tf
+from GP_crop_v3 import *
 
-# def dense(input_data, H, N=None, name="dense"):
-#     if not N:
-#         N = input_data.get_shape()[-1]
-#     with tf.variable_scope(name):
-#         W = tf.get_variable("W", [N, H], initializer=tf.contrib.layers.variance_scaling_initializer())
-#         b = tf.get_variable("b", [1, H])
-#         return tf.matmul(input_data, W, name="matmul") + b
+def dense(input_data, H, N=None, name="dense"):
+    if not N:
+        N = input_data.get_shape()[-1]
+    with tf.variable_scope(name):
+        W = tf.get_variable("W", [N, H], initializer=tf.contrib.layers.variance_scaling_initializer())
+        b = tf.get_variable("b", [1, H])
+        return tf.matmul(input_data, W, name="matmul") + b
 
-# def batch_normalization(input_data, axes=[0], name="batch"):
-#     with tf.variable_scope(name):
-#         mean, variance = tf.nn.moments(input_data, axes, keep_dims=True, name="moments")
-#         return tf.nn.batch_normalization(input_data, mean, variance, None, None, 1e-6, name="batch")
-# class NeuralModel():
-#     def __init__(self,W, name):
+def batch_normalization(input_data, axes=[0], name="batch"):
+    with tf.variable_scope(name):
+        mean, variance = tf.nn.moments(input_data, axes, keep_dims=True, name="moments")
+        return tf.nn.batch_normalization(input_data, mean, variance, None, None, 1e-6, name="batch")
+class NeuralModel():
+    def __init__(self,W, name):
 
-#         self.x = tf.placeholder(tf.float32, [None, W], name="x")
-#         self.y = tf.placeholder(tf.float32, [None])
-#         self.lr = tf.placeholder(tf.float32, [])
-#         self.keep_prob = tf.placeholder(tf.float32, [])
+        self.x = tf.placeholder(tf.float32, [None, W], name="x")
+        self.y = tf.placeholder(tf.float32, [None])
+        self.lr = tf.placeholder(tf.float32, [])
+        self.keep_prob = tf.placeholder(tf.float32, [])
 
-#         fc1 = dense(self.x, 256, name="fc1")
-#         fc1_r = tf.nn.relu(fc1)
-#         fc2 = dense(fc1_r, 256, name="fc2")
-#         fc2_r = tf.nn.relu(fc2)
-#         fc3 = dense(fc2_r, 256, name="fc3")
-#         fc3_r = tf.nn.relu(fc3)
-#         self.pred = tf.squeeze(dense(fc3_r, 1, name="pred"))
+        fc1 = dense(self.x, 256, name="fc1")
+        fc1_r = tf.nn.relu(fc1)
+        fc2 = dense(fc1_r, 256, name="fc2")
+        fc2_r = tf.nn.relu(fc2)
+        fc3 = dense(fc2_r, 256, name="fc3")
+        fc3_r = tf.nn.relu(fc3)
+        self.pred = tf.squeeze(dense(fc3_r, 1, name="pred"))
 
-#         # l2
-#         self.loss_err = tf.nn.l2_loss(self.pred - self.y)
+        # l2
+        self.loss_err = tf.nn.l2_loss(self.pred - self.y)
 
-#         self.loss_reg = tf.add_n([tf.nn.l2_loss(v) for v in tf.trainable_variables()])
-#         self.loss = self.loss_err+self.loss_reg
-#         # self.loss = self.loss_err
+        self.loss_reg = tf.add_n([tf.nn.l2_loss(v) for v in tf.trainable_variables()])
+        self.loss = self.loss_err+self.loss_reg
+        # self.loss = self.loss_err
 
-#         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
+        self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
 
 # '''LOAD 2009-2013'''
 # path_data = '/atlas/u/jiaxuan/data/MODIS_data_county_processed_compressed/'
@@ -67,375 +67,375 @@ import multiprocessing
 # print soil_all.min(),soil_all.max()
 
 
-# '''LOAD 2009-2015, no weather'''
-# path_data = '/atlas/u/jiaxuan/data/google_drive/img_output/'
-# # load mean data
-# filename = 'histogram_all_mean.npz'
-# content = np.load(path_data + filename)
-# image_all = content['output_image']
-# yield_all = content['output_yield']
-# year_all = content['output_year']
-# locations_all = content['output_locations']
-# index_all = content['output_index']
-# # keep major counties
-# list_keep=[]
-# for i in range(image_all.shape[0]):
-#         if (index_all[i,0]==5)or(index_all[i,0]==17)or(index_all[i,0]==18)or(index_all[i,0]==19)or(index_all[i,0]==20)or(index_all[i,0]==27)or(index_all[i,0]==29)or(index_all[i,0]==31)or(index_all[i,0]==38)or(index_all[i,0]==39)or(index_all[i,0]==46):
-#                 list_keep.append(i)
-# image_all=image_all[list_keep]
-# yield_all=yield_all[list_keep]
-# year_all = year_all[list_keep]
-# locations_all = locations_all[list_keep]
-# index_all = index_all[list_keep]
+'''LOAD 2009-2015, no weather'''
+path_data = '/atlas/u/jiaxuan/data/google_drive/img_output/'
+# load mean data
+filename = 'histogram_all_mean.npz'
+content = np.load(path_data + filename)
+image_all = content['output_image']
+yield_all = content['output_yield']
+year_all = content['output_year']
+locations_all = content['output_locations']
+index_all = content['output_index']
+# keep major counties
+list_keep=[]
+for i in range(image_all.shape[0]):
+        if (index_all[i,0]==5)or(index_all[i,0]==17)or(index_all[i,0]==18)or(index_all[i,0]==19)or(index_all[i,0]==20)or(index_all[i,0]==27)or(index_all[i,0]==29)or(index_all[i,0]==31)or(index_all[i,0]==38)or(index_all[i,0]==39)or(index_all[i,0]==46):
+                list_keep.append(i)
+image_all=image_all[list_keep]
+yield_all=yield_all[list_keep]
+year_all = year_all[list_keep]
+locations_all = locations_all[list_keep]
+index_all = index_all[list_keep]
 
-# # calc NDVI
-# image_NDVI = np.zeros([image_all.shape[0],32])
-# for i in range(32):
-#         image_NDVI[:,i] = (image_all[:,1+9*i]-image_all[:,9*i])/(image_all[:,1+9*i]+image_all[:,9*i])
+# calc NDVI
+image_NDVI = np.zeros([image_all.shape[0],32])
+for i in range(32):
+        image_NDVI[:,i] = (image_all[:,1+9*i]-image_all[:,9*i])/(image_all[:,1+9*i]+image_all[:,9*i])
 
 
-# RMSE_ridge  = np.zeros([7,6])
-# ME_ridge  = np.zeros([7,6])
-# RMSE_tree  = np.zeros([7,6])
-# ME_tree  = np.zeros([7,6])
-# RMSE_DNN  = np.zeros([7,6])
-# ME_DNN  = np.zeros([7,6])
-# RMSE_ridge_raw  = np.zeros([7,6])
-# ME_ridge_raw  = np.zeros([7,6])
-# RMSE_tree_raw  = np.zeros([7,6])
-# ME_tree_raw  = np.zeros([7,6])
-# RMSE_DNN_raw  = np.zeros([7,6])
-# ME_DNN_raw  = np.zeros([7,6])
+RMSE_ridge  = np.zeros([7,6])
+ME_ridge  = np.zeros([7,6])
+RMSE_tree  = np.zeros([7,6])
+ME_tree  = np.zeros([7,6])
+RMSE_DNN  = np.zeros([7,6])
+ME_DNN  = np.zeros([7,6])
+RMSE_ridge_raw  = np.zeros([7,6])
+ME_ridge_raw  = np.zeros([7,6])
+RMSE_tree_raw  = np.zeros([7,6])
+ME_tree_raw  = np.zeros([7,6])
+RMSE_DNN_raw  = np.zeros([7,6])
+ME_DNN_raw  = np.zeros([7,6])
 
-# RMSE_ridge_NDVI = np.zeros([7,6])
-# ME_ridge_NDVI = np.zeros([7,6])
-# RMSE_ridge_weather = np.zeros([7,6])
-# ME_ridge_weather = np.zeros([7,6])
-# RMSE_ridge_NDVI_weather = np.zeros([7,6])
-# ME_ridge_NDVI_weather = np.zeros([7,6])
-# for i,predict_year in enumerate(range(2009,2014)):
-# 	validate = np.nonzero(year_all == predict_year)[0]
-# 	train = np.nonzero(year_all < predict_year)[0]
-# 	for j,day in enumerate(range(10,31,4)):
-# 		print day
-# 		# Ridge regression, NDVI
-# 		feature = image_NDVI[:,0:day]
+RMSE_ridge_NDVI = np.zeros([7,6])
+ME_ridge_NDVI = np.zeros([7,6])
+RMSE_ridge_weather = np.zeros([7,6])
+ME_ridge_weather = np.zeros([7,6])
+RMSE_ridge_NDVI_weather = np.zeros([7,6])
+ME_ridge_NDVI_weather = np.zeros([7,6])
+for i,predict_year in enumerate(range(2009,2014)):
+	validate = np.nonzero(year_all == predict_year)[0]
+	train = np.nonzero(year_all < predict_year)[0]
+	for j,day in enumerate(range(10,31,4)):
+		print day
+		# Ridge regression, NDVI
+		feature = image_NDVI[:,0:day]
 
-# 		lr = linear_model.Ridge(10)
-# 		lr.fit(feature[train],yield_all[train])
-# 		Y_pred_reg = lr.predict(feature[validate])
-# 		rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
-# 		me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
-# 		RMSE_ridge_NDVI[i,j] = rmse
-# 		ME_ridge_NDVI[i,j] = me
+		lr = linear_model.Ridge(10)
+		lr.fit(feature[train],yield_all[train])
+		Y_pred_reg = lr.predict(feature[validate])
+		rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
+		me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
+		RMSE_ridge_NDVI[i,j] = rmse
+		ME_ridge_NDVI[i,j] = me
 
-#                 # Ridge regression weather
-#                 feature = np.concatenate((soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
+                # Ridge regression weather
+                feature = np.concatenate((soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
 
-#                 lr = linear_model.Ridge(10)
-#                 lr.fit(feature[train],yield_all[train])
-#                 Y_pred_reg = lr.predict(feature[validate])
-#                 rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
-#                 me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
-#                 RMSE_ridge_weather[i,j] = rmse
-#                 ME_ridge_weather[i,j] = me
+                lr = linear_model.Ridge(10)
+                lr.fit(feature[train],yield_all[train])
+                Y_pred_reg = lr.predict(feature[validate])
+                rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
+                me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
+                RMSE_ridge_weather[i,j] = rmse
+                ME_ridge_weather[i,j] = me
 
-#                 # Ridge regression NDVI+weather
-#                 feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
+                # Ridge regression NDVI+weather
+                feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
 
-#                 lr = linear_model.Ridge(10)
-#                 lr.fit(feature[train],yield_all[train])
-#                 Y_pred_reg = lr.predict(feature[validate])
-#                 rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
-#                 me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
-#                 RMSE_ridge_NDVI_weather[i,j] = rmse
-#                 ME_ridge_NDVI_weather[i,j] = me
+                lr = linear_model.Ridge(10)
+                lr.fit(feature[train],yield_all[train])
+                Y_pred_reg = lr.predict(feature[validate])
+                rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
+                me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
+                RMSE_ridge_NDVI_weather[i,j] = rmse
+                ME_ridge_NDVI_weather[i,j] = me
 
-		# # Boosting Regression Tree, NDVI
-		# feature = image_NDVI[:,0:day]
-		# # feature = image_all[:,0:day*9]
-		# # feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
-		# params = {'n_estimators': 500, 'max_depth': 4, 'min_samples_split': 1,
-  #         'learning_rate': 0.01, 'loss': 'ls'}
-		# lr = ensemble.GradientBoostingRegressor(**params)
-		# lr.fit(feature[train],yield_all[train])
-		# Y_pred_reg = lr.predict(feature[validate])
-		# rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
-		# me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
-		# RMSE_tree[i,j] = rmse
-		# ME_tree[i,j] = me
+		# Boosting Regression Tree, NDVI
+		feature = image_NDVI[:,0:day]
+		# feature = image_all[:,0:day*9]
+		# feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
+		params = {'n_estimators': 500, 'max_depth': 4, 'min_samples_split': 1,
+          'learning_rate': 0.01, 'loss': 'ls'}
+		lr = ensemble.GradientBoostingRegressor(**params)
+		lr.fit(feature[train],yield_all[train])
+		Y_pred_reg = lr.predict(feature[validate])
+		rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
+		me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
+		RMSE_tree[i,j] = rmse
+		ME_tree[i,j] = me
 
-		# # DNN
-		# # feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
-		# feature = image_NDVI[:,0:day]
-		# g = tf.Graph()
-		# with g.as_default():
-		# 	model= NeuralModel(feature.shape[1],'net')
-		# 	sess = tf.Session()
-		# 	sess.run(tf.initialize_all_variables())
-		# 	lr = 1e-3
-		# 	for k in range(500):
-		# 		# if k==500:
-		# 		# 	lr/=10
-		# 		_, train_loss, train_loss_err = sess.run([model.train_op, model.loss, model.loss_err], feed_dict={
-  #                                   model.x:feature[train],
-  #                                   model.y:yield_all[train],
-  #                                   model.lr:lr,
-  #                                   model.keep_prob: 1
-  #                                   })
-		# 		val_loss, val_loss_err,pred = sess.run([model.loss, model.loss_err,model.pred], feed_dict={
-  #                                   model.x:feature[validate],
-  #                                   model.y:yield_all[validate],
-  #                                   model.keep_prob: 1
-  #                                   })
-		# 		if k%100 == 0:
-		# 			print k
-		# 			print 'train',train_loss,train_loss_err
-		# 			print 'val', val_loss,val_loss_err
-		# 			rmse = np.sqrt(np.mean((pred - yield_all[validate])**2))
-		# 			me = np.mean(pred - yield_all[validate])/np.mean(yield_all[validate,])*100
-		# 			print 'RMSE',rmse,'ME',me
-		# RMSE_DNN[i,j] = rmse
-		# ME_DNN[i,j] = me
+		# DNN
+		# feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
+		feature = image_NDVI[:,0:day]
+		g = tf.Graph()
+		with g.as_default():
+			model= NeuralModel(feature.shape[1],'net')
+			sess = tf.Session()
+			sess.run(tf.initialize_all_variables())
+			lr = 1e-3
+			for k in range(500):
+				# if k==500:
+				# 	lr/=10
+				_, train_loss, train_loss_err = sess.run([model.train_op, model.loss, model.loss_err], feed_dict={
+                                    model.x:feature[train],
+                                    model.y:yield_all[train],
+                                    model.lr:lr,
+                                    model.keep_prob: 1
+                                    })
+				val_loss, val_loss_err,pred = sess.run([model.loss, model.loss_err,model.pred], feed_dict={
+                                    model.x:feature[validate],
+                                    model.y:yield_all[validate],
+                                    model.keep_prob: 1
+                                    })
+				if k%100 == 0:
+					print k
+					print 'train',train_loss,train_loss_err
+					print 'val', val_loss,val_loss_err
+					rmse = np.sqrt(np.mean((pred - yield_all[validate])**2))
+					me = np.mean(pred - yield_all[validate])/np.mean(yield_all[validate,])*100
+					print 'RMSE',rmse,'ME',me
+		RMSE_DNN[i,j] = rmse
+		ME_DNN[i,j] = me
 
-  #               # Ridge regression Raw image
-  #               feature = image_all[:,0:day*9]
+                # Ridge regression Raw image
+                feature = image_all[:,0:day*9]
 
-  #               lr = linear_model.Ridge(10)
-  #               lr.fit(feature[train],yield_all[train])
-  #               Y_pred_reg = lr.predict(feature[validate])
-  #               rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
-  #               me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
-  #               RMSE_ridge_raw[i,j] = rmse
-  #               ME_ridge_raw[i,j] = me
+                lr = linear_model.Ridge(10)
+                lr.fit(feature[train],yield_all[train])
+                Y_pred_reg = lr.predict(feature[validate])
+                rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
+                me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
+                RMSE_ridge_raw[i,j] = rmse
+                ME_ridge_raw[i,j] = me
 
-  #               # Boosting Regression Tree, NDVI
-  #               feature = image_all[:,0:day*9]
-  #               # feature = image_all[:,0:day*9]
-  #               # feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
-  #               params = {'n_estimators': 500, 'max_depth': 4, 'min_samples_split': 1,
-  #         'learning_rate': 0.01, 'loss': 'ls'}
-  #               lr = ensemble.GradientBoostingRegressor(**params)
-  #               lr.fit(feature[train],yield_all[train])
-  #               Y_pred_reg = lr.predict(feature[validate])
-  #               rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
-  #               me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
-  #               RMSE_tree_raw[i,j] = rmse
-  #               ME_tree_raw[i,j] = me
-
-                # # DNN
-                # # feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
+                # Boosting Regression Tree, NDVI
+                feature = image_all[:,0:day*9]
                 # feature = image_all[:,0:day*9]
-                # g = tf.Graph()
-                # with g.as_default():
-                #         model= NeuralModel(feature.shape[1],'net')
-                #         sess = tf.Session()
-                #         sess.run(tf.initialize_all_variables())
-                #         lr = 1e-3
-                #         for k in range(4000):
-                #                 if k==500:
-                #                       lr/=10
-                #                 _, train_loss, train_loss_err = sess.run([model.train_op, model.loss, model.loss_err], feed_dict={
-                #                     model.x:feature[train],
-                #                     model.y:yield_all[train],
-                #                     model.lr:lr,
-                #                     model.keep_prob: 1
-                #                     })
-                #                 val_loss, val_loss_err,pred = sess.run([model.loss, model.loss_err,model.pred], feed_dict={
-                #                     model.x:feature[validate],
-                #                     model.y:yield_all[validate],
-                #                     model.keep_prob: 1
-                #                     })
-                #                 if k%100 == 0:
-                #                         print k
-                #                         print 'train',train_loss,train_loss_err
-                #                         print 'val', val_loss,val_loss_err
-                #                         rmse = np.sqrt(np.mean((pred - yield_all[validate])**2))
-                #                         me = np.mean(pred - yield_all[validate])/np.mean(yield_all[validate,])*100
-                #                         print 'RMSE',rmse,'ME',me
-                # RMSE_DNN_raw[i,j] = rmse
-                # ME_DNN_raw[i,j] = me
+                # feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
+                params = {'n_estimators': 500, 'max_depth': 4, 'min_samples_split': 1,
+          'learning_rate': 0.01, 'loss': 'ls'}
+                lr = ensemble.GradientBoostingRegressor(**params)
+                lr.fit(feature[train],yield_all[train])
+                Y_pred_reg = lr.predict(feature[validate])
+                rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate,])**2))
+                me = np.mean(Y_pred_reg-yield_all[validate,])/np.mean(yield_all[validate,])*100
+                RMSE_tree_raw[i,j] = rmse
+                ME_tree_raw[i,j] = me
+
+                # DNN
+                # feature = np.concatenate((image_NDVI[:,0:day],soil_all,weather_all[:,0:((day*8+49)/30)*5]),axis=1)
+                feature = image_all[:,0:day*9]
+                g = tf.Graph()
+                with g.as_default():
+                        model= NeuralModel(feature.shape[1],'net')
+                        sess = tf.Session()
+                        sess.run(tf.initialize_all_variables())
+                        lr = 1e-3
+                        for k in range(4000):
+                                if k==500:
+                                      lr/=10
+                                _, train_loss, train_loss_err = sess.run([model.train_op, model.loss, model.loss_err], feed_dict={
+                                    model.x:feature[train],
+                                    model.y:yield_all[train],
+                                    model.lr:lr,
+                                    model.keep_prob: 1
+                                    })
+                                val_loss, val_loss_err,pred = sess.run([model.loss, model.loss_err,model.pred], feed_dict={
+                                    model.x:feature[validate],
+                                    model.y:yield_all[validate],
+                                    model.keep_prob: 1
+                                    })
+                                if k%100 == 0:
+                                        print k
+                                        print 'train',train_loss,train_loss_err
+                                        print 'val', val_loss,val_loss_err
+                                        rmse = np.sqrt(np.mean((pred - yield_all[validate])**2))
+                                        me = np.mean(pred - yield_all[validate])/np.mean(yield_all[validate,])*100
+                                        print 'RMSE',rmse,'ME',me
+                RMSE_DNN_raw[i,j] = rmse
+                ME_DNN_raw[i,j] = me
 
 
-# ## CNN
-# RMSE_CNN = np.zeros([7,6])
-# ME_CNN = np.zeros([7,6])
-# RMSE_CNN_GP = np.zeros([7,6])
-# ME_CNN_GP = np.zeros([7,6])
+## CNN
+RMSE_CNN = np.zeros([7,6])
+ME_CNN = np.zeros([7,6])
+RMSE_CNN_GP = np.zeros([7,6])
+ME_CNN_GP = np.zeros([7,6])
 
-# save_path = '/atlas/u/jiaxuan/data/train_results/final/monthly/'
-# for loop in range(0,2):
-# 	for i,predict_year in enumerate(range(2009,2016)):
-#                 for j,time in enumerate(range(10,31,4)):
-#                         if predict_year==2012:
-#                                 path_current = save_path+str(loop+2)+str(time)+str(predict_year)+'result_prediction.npz'
-#                         else:
-# 			     path_current = save_path+str(loop)+str(time)+str(predict_year)+'result_prediction.npz'
-# 			data = np.load(path_current)
+save_path = '/atlas/u/jiaxuan/data/train_results/final/monthly/'
+for loop in range(0,2):
+	for i,predict_year in enumerate(range(2009,2016)):
+                for j,time in enumerate(range(10,31,4)):
+                        if predict_year==2012:
+                                path_current = save_path+str(loop+2)+str(time)+str(predict_year)+'result_prediction.npz'
+                        else:
+			     path_current = save_path+str(loop)+str(time)+str(predict_year)+'result_prediction.npz'
+			data = np.load(path_current)
                         
-# 			year = data['year_out']
-# 			real = data['real_out']
-# 			pred = data['pred_out']
-#                         locations = data['locations_out']
-#                         index_out=data['index_out']
-#                         feature_image = data['feature_out']
+			year = data['year_out']
+			real = data['real_out']
+			pred = data['pred_out']
+                        locations = data['locations_out']
+                        index_out=data['index_out']
+                        feature_image = data['feature_out']
 
-# 			validate = np.nonzero(year == predict_year)[0]
-# 			train = np.nonzero(year < predict_year)[0]
-# 			#CNN
-# 			rmse=np.sqrt(np.mean((real[validate]-pred[validate])**2))
-# 			me = np.mean(pred[validate]-real[validate])/np.mean(real[validate])*100
-# 			RMSE_CNN[i,j]+=rmse
-# 			ME_CNN[i,j]+=me
+			validate = np.nonzero(year == predict_year)[0]
+			train = np.nonzero(year < predict_year)[0]
+			#CNN
+			rmse=np.sqrt(np.mean((real[validate]-pred[validate])**2))
+			me = np.mean(pred[validate]-real[validate])/np.mean(real[validate])*100
+			RMSE_CNN[i,j]+=rmse
+			ME_CNN[i,j]+=me
 
-# 			#CNN+GP
-# 			rmse,me = GaussianProcess(predict_year,path_current)
-# 			RMSE_CNN_GP[i,j]+=rmse
-# 			ME_CNN_GP[i,j]+=me/np.mean(real[validate])*100
-# RMSE_CNN /= 2
-# ME_CNN /= 2
-# RMSE_CNN_GP /= 2
-# ME_CNN_GP /= 2
+			#CNN+GP
+			rmse,me = GaussianProcess(predict_year,path_current)
+			RMSE_CNN_GP[i,j]+=rmse
+			ME_CNN_GP[i,j]+=me/np.mean(real[validate])*100
+RMSE_CNN /= 2
+ME_CNN /= 2
+RMSE_CNN_GP /= 2
+ME_CNN_GP /= 2
 
 
-# ## CNN+weather
-# RMSE_CNN_noweather = np.zeros([5,6])
-# ME_CNN_noweather = np.zeros([5,6])
-# RMSE_CNN_weather = np.zeros([5,6])
-# ME_CNN_weather = np.zeros([5,6])
+## CNN+weather
+RMSE_CNN_noweather = np.zeros([5,6])
+ME_CNN_noweather = np.zeros([5,6])
+RMSE_CNN_weather = np.zeros([5,6])
+ME_CNN_weather = np.zeros([5,6])
 
-# save_path = '/atlas/u/jiaxuan/data/train_results/final/monthly/'
-# for loop in range(0,2):
-#         #open any set
-#         path_current = save_path+str(0)+str(10)+str(2009)+'result_prediction.npz'
-#         data = np.load(path_current)
-#         year = data['year_out']
-#         real = data['real_out']
-#         pred = data['pred_out']
-#         locations = data['locations_out']
-#         index_out=data['index_out']
-#         feature_image = data['feature_out']
-#         #find related soil and weather
+save_path = '/atlas/u/jiaxuan/data/train_results/final/monthly/'
+for loop in range(0,2):
+        #open any set
+        path_current = save_path+str(0)+str(10)+str(2009)+'result_prediction.npz'
+        data = np.load(path_current)
+        year = data['year_out']
+        real = data['real_out']
+        pred = data['pred_out']
+        locations = data['locations_out']
+        index_out=data['index_out']
+        feature_image = data['feature_out']
+        #find related soil and weather
         
-#         weather_dir = '/atlas/u/jiaxuan/data/MODIS_data_county_processed_compressed/'
-#         soil = np.genfromtxt(weather_dir+'soil_output.csv', delimiter=',')
-#         weather = np.genfromtxt(weather_dir+'daymet_mean.csv', delimiter=',')
-#         feature_soil = np.zeros([locations.shape[0],3])
-#         feature_weather = np.zeros([locations.shape[0],60])
+        weather_dir = '/atlas/u/jiaxuan/data/MODIS_data_county_processed_compressed/'
+        soil = np.genfromtxt(weather_dir+'soil_output.csv', delimiter=',')
+        weather = np.genfromtxt(weather_dir+'daymet_mean.csv', delimiter=',')
+        feature_soil = np.zeros([locations.shape[0],3])
+        feature_weather = np.zeros([locations.shape[0],60])
 
-#         list_delete = []
-#         for k in range(locations.shape[0]):
-#                 if k%1000==0:
-#                         print k
+        list_delete = []
+        for k in range(locations.shape[0]):
+                if k%1000==0:
+                        print k
 
-#                 key = np.array([int(year[k]),int(index_out[k,0]),int(index_out[k,1])])
-#                 index = np.where(np.all(soil[:,0:3].astype('int') == key, axis=1))
-#                 soil_temp = soil[index,3:6]
-#                 if soil_temp.shape==(1,0,3):
-#                         list_delete.append(k)
-#                         continue
+                key = np.array([int(year[k]),int(index_out[k,0]),int(index_out[k,1])])
+                index = np.where(np.all(soil[:,0:3].astype('int') == key, axis=1))
+                soil_temp = soil[index,3:6]
+                if soil_temp.shape==(1,0,3):
+                        list_delete.append(k)
+                        continue
 
-#                 weather_temp = np.zeros([5*12])
-#                 for idx,month in enumerate(range(1,13)):
-#                         key = np.array([int(year[k]),int(month),int(index_out[k,0]),int(index_out[k,1])])
-#                         index = np.where(np.all(weather[:,0:4].astype(int) == key, axis=1))
-#                         weather_temp[idx*5:(idx+1)*5] = weather[index,4:9].flatten()
+                weather_temp = np.zeros([5*12])
+                for idx,month in enumerate(range(1,13)):
+                        key = np.array([int(year[k]),int(month),int(index_out[k,0]),int(index_out[k,1])])
+                        index = np.where(np.all(weather[:,0:4].astype(int) == key, axis=1))
+                        weather_temp[idx*5:(idx+1)*5] = weather[index,4:9].flatten()
 
-#                 feature_soil[k]=soil_temp
-#                 feature_weather[k]=weather_temp
-#         feature_soil = np.delete(feature_soil, list_delete, 0)
-#         feature_weather = np.delete(feature_weather, list_delete, 0)
-#         for i,predict_year in enumerate(range(2009,2014)):
-#                 for j,time in enumerate(range(10,31,4)):
-#                         if predict_year==2012:
-#                                 path_current = save_path+str(loop+2)+str(time)+str(predict_year)+'result_prediction.npz'
-#                         else:
-#                              path_current = save_path+str(loop)+str(time)+str(predict_year)+'result_prediction.npz'
-#                         data = np.load(path_current)
+                feature_soil[k]=soil_temp
+                feature_weather[k]=weather_temp
+        feature_soil = np.delete(feature_soil, list_delete, 0)
+        feature_weather = np.delete(feature_weather, list_delete, 0)
+        for i,predict_year in enumerate(range(2009,2014)):
+                for j,time in enumerate(range(10,31,4)):
+                        if predict_year==2012:
+                                path_current = save_path+str(loop+2)+str(time)+str(predict_year)+'result_prediction.npz'
+                        else:
+                             path_current = save_path+str(loop)+str(time)+str(predict_year)+'result_prediction.npz'
+                        data = np.load(path_current)
                         
-#                         year = data['year_out']
-#                         real = data['real_out']
-#                         pred = data['pred_out']
-#                         locations = data['locations_out']
-#                         index_out=data['index_out']
-#                         feature_image = data['feature_out']
+                        year = data['year_out']
+                        real = data['real_out']
+                        pred = data['pred_out']
+                        locations = data['locations_out']
+                        index_out=data['index_out']
+                        feature_image = data['feature_out']
 
-#                         year=np.delete(year,list_delete,0)
-#                         real=np.delete(real,list_delete,0)
-#                         pred = np.delete(pred,list_delete, 0)
-#                         locations = np.delete(locations, list_delete, 0)
-#                         index_out = np.delete(index_out, list_delete, 0)
-#                         feature_image = np.delete(feature_image, list_delete, 0)
-#                         print year.shape,real.shape,pred.shape,locations.shape
-#                         print index_out.shape,feature_image.shape,feature_soil.shape,feature_weather.shape
+                        year=np.delete(year,list_delete,0)
+                        real=np.delete(real,list_delete,0)
+                        pred = np.delete(pred,list_delete, 0)
+                        locations = np.delete(locations, list_delete, 0)
+                        index_out = np.delete(index_out, list_delete, 0)
+                        feature_image = np.delete(feature_image, list_delete, 0)
+                        print year.shape,real.shape,pred.shape,locations.shape
+                        print index_out.shape,feature_image.shape,feature_soil.shape,feature_weather.shape
 
-#                         validate = np.nonzero(year == predict_year)[0]
-#                         train = np.nonzero(year < predict_year)[0]
+                        validate = np.nonzero(year == predict_year)[0]
+                        train = np.nonzero(year < predict_year)[0]
 
 
-#                         # img
-#                         feature = feature_image
-#                         lr = linear_model.Ridge(alpha =2000)
-#                         lr.fit(feature[train],real[train])
-#                         pred_ridge = lr.predict(feature[validate])
-#                         rmse = np.sqrt(np.mean((pred_ridge-real[validate])**2))
-#                         me = np.mean(pred_ridge-real[validate])/np.mean(real[validate])*100
-#                         print 'img'
-#                         print rmse,me
-#                         RMSE_CNN_noweather[i,j]+=rmse
-#                         ME_CNN_noweather[i,j]+=me
+                        # img
+                        feature = feature_image
+                        lr = linear_model.Ridge(alpha =2000)
+                        lr.fit(feature[train],real[train])
+                        pred_ridge = lr.predict(feature[validate])
+                        rmse = np.sqrt(np.mean((pred_ridge-real[validate])**2))
+                        me = np.mean(pred_ridge-real[validate])/np.mean(real[validate])*100
+                        print 'img'
+                        print rmse,me
+                        RMSE_CNN_noweather[i,j]+=rmse
+                        ME_CNN_noweather[i,j]+=me
                         
-#                         # img+weather
-#                         feature = np.concatenate((feature_image, feature_soil, feature_weather[:,0:((day*8+49)/30)*5]),axis=1)
-#                         lr = linear_model.Ridge(alpha =2000)
-#                         lr.fit(feature[train],real[train])
-#                         pred_ridge = lr.predict(feature[validate])
+                        # img+weather
+                        feature = np.concatenate((feature_image, feature_soil, feature_weather[:,0:((day*8+49)/30)*5]),axis=1)
+                        lr = linear_model.Ridge(alpha =2000)
+                        lr.fit(feature[train],real[train])
+                        pred_ridge = lr.predict(feature[validate])
 
-#                         rmse = np.sqrt(np.mean((pred_ridge-real[validate])**2))
-#                         me = np.mean(pred_ridge-real[validate])/np.mean(real[validate])*100
-#                         print 'img+weather'
-#                         print rmse,me
-#                         RMSE_CNN_weather[i,j]+=rmse
-#                         ME_CNN_weather[i,j]+=me
-# RMSE_CNN_noweather /= 2
-# ME_CNN_noweather /= 2
-# RMSE_CNN_weather /= 2
-# ME_CNN_weather /= 2
+                        rmse = np.sqrt(np.mean((pred_ridge-real[validate])**2))
+                        me = np.mean(pred_ridge-real[validate])/np.mean(real[validate])*100
+                        print 'img+weather'
+                        print rmse,me
+                        RMSE_CNN_weather[i,j]+=rmse
+                        ME_CNN_weather[i,j]+=me
+RMSE_CNN_noweather /= 2
+ME_CNN_noweather /= 2
+RMSE_CNN_weather /= 2
+ME_CNN_weather /= 2
 
 
 
-# ## LSTM
-# RMSE_LSTM = np.zeros([7,6])
-# ME_LSTM = np.zeros([7,6])
-# RMSE_LSTM_GP = np.zeros([7,6])
-# ME_LSTM_GP = np.zeros([7,6])
+## LSTM
+RMSE_LSTM = np.zeros([7,6])
+ME_LSTM = np.zeros([7,6])
+RMSE_LSTM_GP = np.zeros([7,6])
+ME_LSTM_GP = np.zeros([7,6])
 
-# save_path = '/atlas/u/jiaxuan/data/train_results/final/lstm/'
-# for loop in range(0,3):
-#       for i,predict_year in enumerate(range(2009,2016)):
-#               for j,time in enumerate(range(10,31,4)):
-#                       path_current = save_path+str(loop)+str(time)+str(predict_year)+'result_prediction.npz'
-#                       data = np.load(path_current)
-#                       year_all = data['year_out']
-#                       real = data['real_out']
-#                       pred = data['pred_out']
+save_path = '/atlas/u/jiaxuan/data/train_results/final/lstm/'
+for loop in range(0,3):
+      for i,predict_year in enumerate(range(2009,2016)):
+              for j,time in enumerate(range(10,31,4)):
+                      path_current = save_path+str(loop)+str(time)+str(predict_year)+'result_prediction.npz'
+                      data = np.load(path_current)
+                      year_all = data['year_out']
+                      real = data['real_out']
+                      pred = data['pred_out']
 
-#                       validate = np.nonzero(year_all == predict_year)[0]
-#                       train = np.nonzero(year_all < predict_year)[0]
+                      validate = np.nonzero(year_all == predict_year)[0]
+                      train = np.nonzero(year_all < predict_year)[0]
                         
-#                       rmse=np.sqrt(np.mean((real[validate]-pred[validate])**2))
-#                       me = np.mean(pred[validate]-real[validate])
-#                       RMSE_LSTM[i,j]=+rmse
-#                       ME_LSTM[i,j]=+me/np.mean(real[validate])*100
+                      rmse=np.sqrt(np.mean((real[validate]-pred[validate])**2))
+                      me = np.mean(pred[validate]-real[validate])
+                      RMSE_LSTM[i,j]=+rmse
+                      ME_LSTM[i,j]=+me/np.mean(real[validate])*100
 
-#                       #LSTM+GP
-#                       rmse,me = GaussianProcess(predict_year,path_current)
-#                       RMSE_LSTM_GP[i,j]=+rmse
-#                       ME_LSTM_GP[i,j]=+me/np.mean(real[validate])*100
-# RMSE_LSTM /=3
-# ME_LSTM /= 3
-# RMSE_LSTM_GP /= 3
-# ME_LSTM_GP /= 3
+                      #LSTM+GP
+                      rmse,me = GaussianProcess(predict_year,path_current)
+                      RMSE_LSTM_GP[i,j]=+rmse
+                      ME_LSTM_GP[i,j]=+me/np.mean(real[validate])*100
+RMSE_LSTM /=3
+ME_LSTM /= 3
+RMSE_LSTM_GP /= 3
+ME_LSTM_GP /= 3
 
 ME_USDA = np.array([0,0,0,4.19,4.52,2.65])
 ME_USDA_std = np.array([0,0,0,3.16,4.06,1.93])
