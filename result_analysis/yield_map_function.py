@@ -86,6 +86,7 @@ if __name__ == "__main__":
     for predict_year in range(2009,2016):
         for time in range(10,31,4):
             path_load = path+str(0)+str(time)+str(predict_year)+'result_prediction.npz'
-            path_save = path+'map/'+str(0)+str(time)+str(predict_year)+'err.svg'
+            path_save = path+'map/'+str(0)+str(predict_year)+str(time)+'err.svg'
             yield_map(path_load, path_save, predict_year)
+            print predict_year,time
 
