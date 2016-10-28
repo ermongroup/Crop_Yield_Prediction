@@ -3,17 +3,6 @@ import csv
 from BeautifulSoup import BeautifulSoup
 from GP_crop_v3 import *
  
-# # Read in unemployment ratesd
-# unemployment = {}
-# min_value = 100; max_value = 0
-# reader = csv.reader(open('unemployment09.csv'), delimiter=",")
-# for row in reader:
-#     try:
-#         full_fips = row[1] + row[2]
-#         rate = float( row[8].strip() )
-#         unemployment[full_fips] = rate
-#     except:
-#         pass
 
 # Read CNN_err prediction
 CNN = {}

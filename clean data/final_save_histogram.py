@@ -34,7 +34,7 @@ class fetch_data():
         length = self.data_yield.shape[0]
         self.index_all = np.arange(length)
         # load random data, no need to shuffle
-        np.random.shuffle(self.index_all)
+        # np.random.shuffle(self.index_all)
 
         # # divide all data into 3 groups
         # self.index_train = self.index_all[0:int(length * 0.8)]
