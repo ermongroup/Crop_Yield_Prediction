@@ -20,7 +20,8 @@ def yield_map(path_load,path_save,predict_year):
     real = real[validate]
     pred = pred[validate]
     index = index[validate]
-    err_CNN = pred-real
+    # err_CNN = pred-real
+    err_CNN = real
 
     print 'CNN',err_CNN.min(),err_CNN.max()
 
@@ -44,7 +45,10 @@ def yield_map(path_load,path_save,predict_year):
     # Find counties
     paths = soup.findAll('path')
     # Map colors
-    colors = ["#b2182b", "#d6604d", "#f4a582", "#fddbc7", "#d1e5f0", "#92c5de", "#4393c3", "#2166ac"]
+    # # plot error: 8 classes
+    # colors = ["#b2182b", "#d6604d", "#f4a582", "#fddbc7", "#d1e5f0", "#92c5de", "#4393c3", "#2166ac"]
+    # plot yield: 11 classes
+    colors = ['#a50026','#d73027','#f46d43','#fdae61','#fee090','#ffffbf','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695']
 
     # County style
     path_style = 'font-size:12px;fill-rule:nonzero;stroke:#FFFFFF;stroke-opacity:1;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none;stroke-linecap:butt;marker-start:none;stroke-linejoin:bevel;fill:'
@@ -55,22 +59,48 @@ def yield_map(path_load,path_save,predict_year):
                 rate = CNN[p['id']]
             except:
                 continue
-            if rate > 15:
-                color_class = 7
-            elif rate > 10:
-                color_class = 6
-            elif rate > 5:
-                color_class = 5
-            elif rate > 0:
-                color_class = 4
-            elif rate > -5:
-                color_class = 3
-            elif rate > -10:
-                color_class = 2            
-            elif rate > -15:
-                color_class = 1
-            else:
+
+            # # plot error
+            # if rate > 15:
+            #     color_class = 7
+            # elif rate > 10:
+            #     color_class = 6
+            # elif rate > 5:
+            #     color_class = 5
+            # elif rate > 0:
+            #     color_class = 4
+            # elif rate > -5:
+            #     color_class = 3
+            # elif rate > -10:
+            #     color_class = 2            
+            # elif rate > -15:
+            #     color_class = 1
+            # else:
+            #     color_class = 0
+
+            # plot yield
+            if rate > 60:
                 color_class = 0
+            elif rate > 55:
+                color_class = 1
+            elif rate > 50:
+                color_class = 2
+            elif rate > 45:
+                color_class = 3
+            elif rate > 40:
+                color_class = 4
+            elif rate > 35:
+                color_class = 5            
+            elif rate > 30:
+                color_class = 6
+            elif rate > 25:
+                color_class = 7
+            elif rate > 20:
+                color_class = 8
+            elif rate > 15:
+                color_class = 9
+            else:
+                color_class = 10
 
             color = colors[color_class]
             p['style'] = path_style + color
@@ -86,7 +116,7 @@ if __name__ == "__main__":
     for predict_year in range(2009,2016):
         for time in range(10,31,4):
             path_load = path+str(0)+str(time)+str(predict_year)+'result_prediction.npz'
-            path_save = path+'map/'+str(0)+str(predict_year)+str(time)+'err.svg'
+            path_save = path+'map/'+str(0)+str(predict_year)+str(time)+'real.svg'
             yield_map(path_load, path_save, predict_year)
             print predict_year,time
 

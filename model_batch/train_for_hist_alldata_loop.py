@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
 
     for loop in range(0,1):
-        for predict_year in range(2011,2016):
+        for predict_year in range(2009,2016):
             logging.basicConfig(filename=config.save_path+'/log/train_for_hist_alldata_loop'+str(predict_year)+str(loop)+'.log',level=logging.DEBUG)
             # # split into train and validate
             # index_train = np.nonzero(year_all < predict_year)[0]
@@ -89,7 +89,7 @@ if __name__ == "__main__":
                         if i==4000:
                             config.lr/=10
 
-                        if i==15000:
+                        if i==20000:
                             config.lr/=10
                        
                         # index_train_batch = np.random.choice(index_train,size=config.B)

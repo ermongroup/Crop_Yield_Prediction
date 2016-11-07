@@ -11,7 +11,7 @@ from datetime import datetime
 
 class Config():
     B, W, H, C = 32, 32,32, 9
-    train_step = 20000
+    train_step = 25000
     lr = 1e-3
     weight_decay = 0.005
 
@@ -21,7 +21,7 @@ class Config():
     # load_path = "/atlas/u/jiaxuan/data/google_drive/img_full_output/"
     # save_path = '/atlas/u/jiaxuan/data/train_results/histogram_new/test21/'
     # save_path = '/atlas/u/jiaxuan/data/train_results/histogram_new/test22_optimize/'
-    save_path = '/atlas/u/jiaxuan/data/train_results/final/new/'
+    save_path = '/atlas/u/jiaxuan/data/train_results/final/new_L1_L2/'
 
 
 def conv2d(input_data, out_channels, filter_size,stride, in_channels=None, name="conv2d"):
