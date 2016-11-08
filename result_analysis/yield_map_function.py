@@ -228,6 +228,7 @@ if __name__ == "__main__":
     index_ref=content_ref['index_out']
     ref=np.concatenate((year_ref[:,np.newaxis], index_ref),axis=1)
 
+    print 'before',index_all.shape[0]
     # remove extra index
     list_delete=[]
     for i in range(index_all.shape[0]):
@@ -240,7 +241,7 @@ if __name__ == "__main__":
     year_all = np.delete(year_all,list_delete, 0)
     locations_all = np.delete(locations_all, list_delete, 0)
     index_all = np.delete(index_all, list_delete, 0)
-
+    print 'after',index_all.shape[0]
 
     # calc NDVI
     image_NDVI = np.zeros([image_all.shape[0],32])
