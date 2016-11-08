@@ -264,8 +264,6 @@ if __name__ == "__main__":
 
             rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate])**2))
             me = np.mean(Y_pred_reg-yield_all[validate])/np.mean(yield_all[validate])*100
-            RMSE_ridge_NDVI[i,j] = rmse
-            ME_ridge_NDVI[i,j] = me
             print 'Ridge',predict_year,day,rmse,me
 
             # print baseline figure
