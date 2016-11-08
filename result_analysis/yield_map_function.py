@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from sklearn import linear_model
 from sklearn import ensemble
  
-def yield_map(path_load,path_save,predict_year):
+def yield_map(path_load,path_save,predict_year,flag):
     # Read CNN_err prediction
     CNN = {}
     # save_path = '/atlas/u/jiaxuan/data/train_results/final/monthly/'
@@ -23,7 +23,10 @@ def yield_map(path_load,path_save,predict_year):
     pred = pred[validate]
     index = index[validate]
     # err_CNN = pred-real
-    err_CNN = real
+    if flag=='real':
+        err_CNN = real
+    elif flag=='pred':
+        err_CNN = pred
 
     print 'CNN',err_CNN.min(),err_CNN.max()
 
@@ -264,16 +267,22 @@ if __name__ == "__main__":
 
             rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate])**2))
             me = np.mean(Y_pred_reg-yield_all[validate])/np.mean(yield_all[validate])*100
-            print 'Ridge',predict_year,day,rmse,me
+            # print 'Ridge',predict_year,day,rmse,me
 
-            # print baseline figure
-            path_save = path+'map_baseline/'+str(0)+str(predict_year)+str(day)+'baseline.svg'
-            yield_map_raw(Y_pred_reg, index_all[validate], path_save, predict_year)
+            # # print baseline figure
+            # path_save = path+'map_baseline/'+str(0)+str(predict_year)+str(day)+'baseline.svg'
+            # yield_map_raw(Y_pred_reg, index_all[validate], path_save, predict_year)
 
 
-            # # print CNN figure
-            # path_load = path+str(0)+str(day)+str(predict_year)+'result_prediction.npz'
-            # path_save = path+'map/'+str(0)+str(predict_year)+str(day)+'real.svg'
-            # yield_map(path_load, path_save, predict_year)
-            # print predict_year,day
+            # print CNN figure
+            path_load = path+str(0)+str(day)+str(predict_year)+'result_prediction.npz'
+            path_save = path+'map_real/'+str(0)+str(predict_year)+str(day)+'real.svg'
+            yield_map(path_load, path_save, predict_year,'real')
+            print predict_year,day
+
+            # print CNN figure
+            path_load = path+str(0)+str(day)+str(predict_year)+'result_prediction.npz'
+            path_save = path+'map_pred/'+str(0)+str(predict_year)+str(day)+'pred.svg'
+            yield_map(path_load, path_save, predict_year,'pred')
+            print predict_year,day
 
