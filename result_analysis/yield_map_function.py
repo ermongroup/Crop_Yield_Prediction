@@ -224,8 +224,8 @@ if __name__ == "__main__":
     # copy index
     path_load = path+str(0)+str(10)+str(2015)+'result_prediction.npz'
     content_ref=np.load(path_load)
-    year_ref=content_ref['output_year']
-    index_ref=content_ref['output_index']
+    year_ref=content_ref['year_out']
+    index_ref=content_ref['index_out']
     ref=np.concatenate((year_ref, index_ref),axis=1)
 
     # remove extra index
