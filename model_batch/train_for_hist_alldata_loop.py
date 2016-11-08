@@ -46,7 +46,7 @@ if __name__ == "__main__":
     index_all = index_all[list_keep,:]
 
 
-    for loop in range(1,2):
+    for loop in range(0,1):
         for predict_year in range(2009,2016):
             logging.basicConfig(filename=config.save_path+'log/train_for_hist_alldata_loop'+str(predict_year)+str(loop)+'.log',level=logging.DEBUG)
             # # split into train and validate
