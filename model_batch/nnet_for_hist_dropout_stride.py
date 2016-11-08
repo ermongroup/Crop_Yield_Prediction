@@ -21,7 +21,7 @@ class Config():
     # load_path = "/atlas/u/jiaxuan/data/google_drive/img_full_output/"
     # save_path = '/atlas/u/jiaxuan/data/train_results/histogram_new/test21/'
     # save_path = '/atlas/u/jiaxuan/data/train_results/histogram_new/test22_optimize/'
-    save_path = '/atlas/u/jiaxuan/data/train_results/final/new_L1_L2/'
+    save_path = '/atlas/u/jiaxuan/data/train_results/final/corn_yearly/'
 
 
 def conv2d(input_data, out_channels, filter_size,stride, in_channels=None, name="conv2d"):

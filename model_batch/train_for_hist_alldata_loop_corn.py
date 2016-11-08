@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
 
 
-    for loop in range(2,3):
+    for loop in range(0,1):
         for predict_year in range(2009,2016):
             logging.basicConfig(filename=config.save_path+'log/train_for_hist_alldata_loop'+str(predict_year)+str(loop)+'.log',level=logging.DEBUG)
             # # split into train and validate
@@ -91,7 +91,7 @@ if __name__ == "__main__":
             image_validate=image_all[index_validate]
             yield_validate=yield_all[index_validate]
 
-            for time in range(10,31,4):
+            for time in range(30,31):
                 RMSE_min = 100
                 g = tf.Graph()
                 with g.as_default():
