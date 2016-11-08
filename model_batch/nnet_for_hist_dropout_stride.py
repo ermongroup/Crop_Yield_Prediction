@@ -143,7 +143,10 @@ class NeuralModel():
 
         # L1 term
         self.loss_reg = tf.abs(tf.reduce_sum(self.logits - self.y))
-        alpha = 1.5
+        # soybean
+        # alpha = 1.5
+        # corn
+        alpha = 5
         self.loss = self.loss_err+self.loss_reg*alpha
 
         self.train_op = tf.train.AdamOptimizer(self.lr).minimize(self.loss)
