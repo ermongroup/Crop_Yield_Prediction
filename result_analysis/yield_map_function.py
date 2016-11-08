@@ -226,7 +226,7 @@ if __name__ == "__main__":
     content_ref=np.load(path_load)
     year_ref=content_ref['year_out']
     index_ref=content_ref['index_out']
-    ref=np.concatenate((year_ref, index_ref),axis=1)
+    ref=np.concatenate((year_ref[:,np.newaxis], index_ref),axis=1)
 
     # remove extra index
     list_delete=[]
