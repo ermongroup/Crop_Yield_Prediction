@@ -1,6 +1,6 @@
 import numpy as np
 import csv
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 # from GP_crop_v3 import *
 from sklearn import linear_model
 from sklearn import ensemble
