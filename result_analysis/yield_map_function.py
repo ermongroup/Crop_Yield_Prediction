@@ -207,6 +207,7 @@ def yield_map_raw(real,index,path_save,predict_year):
         f.write(soup)
 
 if __name__ == "__main__":
+    path = '/atlas/u/jiaxuan/data/train_results/final/monthly/'
 
     # load baseline
     '''LOAD 2009-2015, no weather'''
@@ -221,7 +222,7 @@ if __name__ == "__main__":
     index_all = content['output_index']
 
     # copy index
-    path_load = path+str(0)+str(day)+str(predict_year)+'result_prediction.npz'
+    path_load = path+str(0)+str(10)+str(2015)+'result_prediction.npz'
     content_ref=np.load(path_load)
     year_ref=content_ref['output_year']
     index_ref=content_ref['output_index']
@@ -247,7 +248,7 @@ if __name__ == "__main__":
         image_NDVI[:,i] = (image_all[:,1+9*i]-image_all[:,9*i])/(image_all[:,1+9*i]+image_all[:,9*i])
 
 
-    path = '/atlas/u/jiaxuan/data/train_results/final/monthly/'
+    
 
     for predict_year in range(2009,2016):
         validate = np.nonzero(year_all == predict_year)[0]
@@ -264,7 +265,7 @@ if __name__ == "__main__":
             me = np.mean(Y_pred_reg-yield_all[validate])/np.mean(yield_all[validate])*100
             RMSE_ridge_NDVI[i,j] = rmse
             ME_ridge_NDVI[i,j] = me
-            print 'Ridge',rmse,me
+            print 'Ridge',predict_year,day,rmse,me
 
             # print baseline figure
             path_save = path+'map_baseline/'+str(0)+str(predict_year)+str(day)+'baseline.svg'
