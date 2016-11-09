@@ -29,6 +29,7 @@ def yield_map(path_load,path_save,predict_year,flag):
         err_CNN = pred
 
     print 'CNN',err_CNN.min(),err_CNN.max()
+    print 'RMSE',np.sqrt(np.mean((pred-real)**2))
 
     for i in range(year.shape[0]):
         loc1 = str(int(index[i,0]))
@@ -83,26 +84,50 @@ def yield_map(path_load,path_save,predict_year,flag):
             # else:
             #     color_class = 0
 
-            # plot yield
-            if rate > 60:
+            # # plot soybean yield
+            # if rate > 60:
+            #     color_class = 0
+            # elif rate > 55:
+            #     color_class = 1
+            # elif rate > 50:
+            #     color_class = 2
+            # elif rate > 45:
+            #     color_class = 3
+            # elif rate > 40:
+            #     color_class = 4
+            # elif rate > 35:
+            #     color_class = 5            
+            # elif rate > 30:
+            #     color_class = 6
+            # elif rate > 25:
+            #     color_class = 7
+            # elif rate > 20:
+            #     color_class = 8
+            # elif rate > 15:
+            #     color_class = 9
+            # else:
+            #     color_class = 10
+
+            # plot corn yield
+            if rate > 200:
                 color_class = 0
-            elif rate > 55:
+            elif rate > 180:
                 color_class = 1
-            elif rate > 50:
+            elif rate > 160:
                 color_class = 2
-            elif rate > 45:
+            elif rate > 140:
                 color_class = 3
-            elif rate > 40:
+            elif rate > 120:
                 color_class = 4
-            elif rate > 35:
+            elif rate > 100:
                 color_class = 5            
-            elif rate > 30:
+            elif rate > 80:
                 color_class = 6
-            elif rate > 25:
+            elif rate > 60:
                 color_class = 7
-            elif rate > 20:
+            elif rate > 40:
                 color_class = 8
-            elif rate > 15:
+            elif rate > 20:
                 color_class = 9
             else:
                 color_class = 10
@@ -210,63 +235,63 @@ def yield_map_raw(real,index,path_save,predict_year):
         f.write(soup)
 
 if __name__ == "__main__":
-    path = '/atlas/u/jiaxuan/data/train_results/final/monthly/'
+    path = '/atlas/u/jiaxuan/data/train_results/final/new_L1_L2/'
 
-    # load baseline
-    '''LOAD 2009-2015, no weather'''
-    path_data = '/atlas/u/jiaxuan/data/google_drive/img_output/'
-    # load mean data
-    filename = 'histogram_all_mean.npz'
-    content = np.load(path_data + filename)
-    image_all = content['output_image']
-    yield_all = content['output_yield']
-    year_all = content['output_year']
-    locations_all = content['output_locations']
-    index_all = content['output_index']
+    # # load baseline
+    # '''LOAD 2009-2015, no weather'''
+    # path_data = '/atlas/u/jiaxuan/data/google_drive/img_output/'
+    # # load mean data
+    # filename = 'histogram_all_mean.npz'
+    # content = np.load(path_data + filename)
+    # image_all = content['output_image']
+    # yield_all = content['output_yield']
+    # year_all = content['output_year']
+    # locations_all = content['output_locations']
+    # index_all = content['output_index']
 
-    # copy index
-    path_load = path+str(0)+str(10)+str(2015)+'result_prediction.npz'
-    content_ref=np.load(path_load)
-    year_ref=content_ref['year_out']
-    index_ref=content_ref['index_out']
-    ref=np.concatenate((year_ref[:,np.newaxis], index_ref),axis=1)
+    # # copy index
+    # path_load = path+str(0)+str(10)+str(2014)+'result_prediction.npz'
+    # content_ref=np.load(path_load)
+    # year_ref=content_ref['year_out']
+    # index_ref=content_ref['index_out']
+    # ref=np.concatenate((year_ref[:,np.newaxis], index_ref),axis=1)
 
-    print 'before',index_all.shape[0]
-    # remove extra index
-    list_delete=[]
-    for i in range(index_all.shape[0]):
-        key = np.array([year_all[i],index_all[i,0],index_all[i,1]])
-        index = np.where(np.all(ref[:,0:3] == key, axis=1))
-        if index[0].shape[0] == 0:
-            list_delete.append(i)
-    image_all=np.delete(image_all,list_delete,0)
-    yield_all=np.delete(yield_all,list_delete,0)
-    year_all = np.delete(year_all,list_delete, 0)
-    locations_all = np.delete(locations_all, list_delete, 0)
-    index_all = np.delete(index_all, list_delete, 0)
-    print 'after',index_all.shape[0]
+    # print 'before',index_all.shape[0]
+    # # remove extra index
+    # list_delete=[]
+    # for i in range(index_all.shape[0]):
+    #     key = np.array([year_all[i],index_all[i,0],index_all[i,1]])
+    #     index = np.where(np.all(ref[:,0:3] == key, axis=1))
+    #     if index[0].shape[0] == 0:
+    #         list_delete.append(i)
+    # image_all=np.delete(image_all,list_delete,0)
+    # yield_all=np.delete(yield_all,list_delete,0)
+    # year_all = np.delete(year_all,list_delete, 0)
+    # locations_all = np.delete(locations_all, list_delete, 0)
+    # index_all = np.delete(index_all, list_delete, 0)
+    # print 'after',index_all.shape[0]
 
-    # calc NDVI
-    image_NDVI = np.zeros([image_all.shape[0],32])
-    for i in range(32):
-        image_NDVI[:,i] = (image_all[:,1+9*i]-image_all[:,9*i])/(image_all[:,1+9*i]+image_all[:,9*i])
+    # # calc NDVI
+    # image_NDVI = np.zeros([image_all.shape[0],32])
+    # for i in range(32):
+    #     image_NDVI[:,i] = (image_all[:,1+9*i]-image_all[:,9*i])/(image_all[:,1+9*i]+image_all[:,9*i])
 
 
     
 
-    for predict_year in range(2009,2016):
-        validate = np.nonzero(year_all == predict_year)[0]
-        train = np.nonzero(year_all < predict_year)[0]
-        for day in range(10,31,4):
-            # Ridge regression, NDVI
-            feature = image_NDVI[:,0:day]
+    for predict_year in range(2009,2014):
+        # validate = np.nonzero(year_all == predict_year)[0]
+        # train = np.nonzero(year_all < predict_year)[0]
+        # for day in range(10,31,4):
+        #     # Ridge regression, NDVI
+        #     feature = image_NDVI[:,0:day]
 
-            lr = linear_model.Ridge(10)
-            lr.fit(feature[train],yield_all[train])
-            Y_pred_reg = lr.predict(feature[validate])
+        #     lr = linear_model.Ridge(10)
+        #     lr.fit(feature[train],yield_all[train])
+        #     Y_pred_reg = lr.predict(feature[validate])
 
-            rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate])**2))
-            me = np.mean(Y_pred_reg-yield_all[validate])/np.mean(yield_all[validate])*100
+        #     rmse = np.sqrt(np.mean((Y_pred_reg-yield_all[validate])**2))
+        #     me = np.mean(Y_pred_reg-yield_all[validate])/np.mean(yield_all[validate])*100
             # print 'Ridge',predict_year,day,rmse,me
 
             # # print baseline figure
@@ -275,13 +300,13 @@ if __name__ == "__main__":
 
 
             # print CNN figure
-            path_load = path+str(0)+str(day)+str(predict_year)+'result_prediction.npz'
+            path_load = path+str(2)+str(day)+str(predict_year)+'result_prediction.npz'
             path_save = path+'map_real/'+str(0)+str(predict_year)+str(day)+'real.svg'
             yield_map(path_load, path_save, predict_year,'real')
             print predict_year,day
 
             # print CNN figure
-            path_load = path+str(0)+str(day)+str(predict_year)+'result_prediction.npz'
+            path_load = path+str(2)+str(day)+str(predict_year)+'result_prediction.npz'
             path_save = path+'map_pred/'+str(0)+str(predict_year)+str(day)+'pred.svg'
             yield_map(path_load, path_save, predict_year,'pred')
             print predict_year,day

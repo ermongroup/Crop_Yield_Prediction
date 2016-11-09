@@ -3,31 +3,34 @@ import matplotlib as mpl
 
 # Make a figure and axes with dimensions as desired.
 fig = pyplot.figure()
-ax2 = fig.add_axes([0.1, 0.1, 0.02, 0.8])
+# vertical
+# ax2 = fig.add_axes([0.1, 0.1, 0.02, 0.8])
+# horizontal
+ax2 = fig.add_axes([0.1, 0.1, 0.8, 0.04])
 
 
 
 # The second example illustrates the use of a ListedColormap, a
 # BoundaryNorm, and extended ends to show the "over" and "under"
 # value colors.
-cmap = mpl.colors.ListedColormap(["#d6604d", "#f4a582", "#fddbc7", "#d1e5f0", "#92c5de", "#4393c3"])
-cmap.set_over("#2166ac")
-cmap.set_under("#b2182b")
+cmap = mpl.colors.ListedColormap(['#4575b4','#74add1','#abd9e9','#e0f3f8','#ffffbf','#fee090','#fdae61','#f46d43','#d73027'])
+cmap.set_over('#a50026')
+cmap.set_under('#313695')
 
 # If a ListedColormap is used, the length of the bounds array must be
 # one greater than the length of the color list.  The bounds must be
 # monotonically increasing.
-bounds = [-15,-10, -5, 0, 5, 10,15]
+bounds = [15,20,25,30,35,40,45,50,55,60]
 norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
 cb2 = mpl.colorbar.ColorbarBase(ax2, cmap=cmap,
                                 norm=norm,
                                 # to use 'extend', you must
                                 # specify two extra boundaries:
-                                boundaries=[-20] + bounds + [20],
+                                boundaries=[10] + bounds + [65],
                                 extend='both',
                                 ticks=bounds,  # optional
                                 spacing='proportional',
-                                orientation='vertical')
+                                orientation='horizontal')
 
 
 
