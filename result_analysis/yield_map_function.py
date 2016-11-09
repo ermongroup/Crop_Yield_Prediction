@@ -282,7 +282,7 @@ if __name__ == "__main__":
     for predict_year in range(2009,2014):
         # validate = np.nonzero(year_all == predict_year)[0]
         # train = np.nonzero(year_all < predict_year)[0]
-        # for day in range(10,31,4):
+        for day in range(10,31,4):
         #     # Ridge regression, NDVI
         #     feature = image_NDVI[:,0:day]
 
